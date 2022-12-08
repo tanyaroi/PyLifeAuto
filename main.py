@@ -13,9 +13,41 @@ PRODUCTS_DICT = {
         "Name" : "Not Milk",
         "Amount" : "2"
     },
-    "1491096" : {
-        "Name" : "Green Tea",
+    "54051157" : {
+        "Name" : "Chocolate Vegangurt",
         "Amount" : "2"
+    },
+    "7296073205692" : {
+        "Name" : "Tomato Sauce",
+        "Amount" : "1"
+    },
+    "3726776" : {
+        "Name" : "Tofu Schnitzel",
+        "Amount" : "1"
+    },
+    "7290017105895" : {
+        "Name" : "Hummus Can",
+        "Amount" : "1"
+    },
+    "7296073006411" : {
+        "Name" : "Medium Pickles",
+        "Amount" : "1"
+    },
+    "7296073345732" : {
+        "Name" : "Organic Tofu",
+        "Amount" : "1"
+    },
+    "7296073392699" : {
+        "Name" : "Paper Towels",
+        "Amount" : "4"
+    },
+    "187938" : {
+        "Name" : "Toilet Paper",
+        "Amount" : "1"
+    },
+    "7290013724946" : {
+        "Name" : "Chocolate Almonds",
+        "Amount" : "1"
     }
 }
 
@@ -29,7 +61,7 @@ URL = 'https://www.shufersal.co.il/online/he/login'
 #### Functions Region ####
 def open_website():
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
-    driver.set_window_size(800, 1080)
+    driver.set_window_size(800, 800)
     driver.get(URL)
     return driver
 
@@ -43,12 +75,14 @@ def sign_in(driver, username, password):
     
     time.sleep(5)   
 
-def clear_cart(driver):
-     
-    add_btn = driver.find_element(By.CSS_SELECTOR,".mobileTop.openCart.hidden-lg-header")
+def open_cart(driver):
+    
+    add_btn = driver.find_element(By.XPATH,'//*[@id="main"]/div[1]/section/ul/li[5]/a/div')
     add_btn.click()
     
     time.sleep(2)
+
+def clear_cart(driver):
 
     if found_elements := driver.find_elements(By.CSS_SELECTOR, '.col-xs-6.deleteCartContainer'):
         add_btn = found_elements[0]
@@ -86,24 +120,41 @@ def add_items(driver, products_dict):
         add_item(driver, k)
         time.sleep(3)
 
+def cart_pay(driver):
+    add_btn = driver.find_element(By.XPATH,'//*[@id="cartContainer"]/div[1]/div/footer/div[2]/div/div[3]')
+    add_btn.click()
+
+    add_btn = driver.find_element(By.XPATH,'//*[@id="cartContainer"]/div/div/footer/div[2]/div/div[2]/button') 
+    add_btn.click()
+
+    time.sleep(2)
+
+def pass_approve(driver, password):
+    search_box = driver.find_element(By.ID, "j_password")
+    search_box.send_keys(password)
+    search_box.send_keys(Keys.ENTER)
+
 def keep_alive():
     # keep chrome alive
     while(True):
         pass
-
-def to_impl():
-    pass
 
 def main():
     driver = open_website()
 
     sign_in(driver, USERNAME, PASSWORD)
 
+    open_cart(driver)
+    
     clear_cart(driver)
 
     add_items(driver, PRODUCTS_DICT)
 
-    to_impl()
+    open_cart(driver)
+
+    cart_pay(driver)
+    
+    pass_approve(driver, PASSWORD)
 
     keep_alive()
 
@@ -114,8 +165,11 @@ main()
 
 #### Tasks Region ####
 # (v) Fix add_item(...) for 2nd item - Fixed with XPATH 
-# (-) Implement the rest, use as many functions as needed
+# (v) Implement the rest, use as many functions as needed
 # (-) Test with a full basket
+# (-) Add amount functionality
+# (-) Missing item exception
+# (-) Json file product dict
 # (-) Split open_website() to init_browser(...) and goto_url(...)
 # (-) Final payment must always be manual after cart review !!!!!!
 # (-) What else? Who else?
