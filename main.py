@@ -5,6 +5,9 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
+import json
+import pwinput
+import bcrypt
 
 
 #### Data Region ####
@@ -22,48 +25,7 @@ RES_DICT = {
     "check_btn" : '//*[@id="cartContainer"]/div/div/footer/div[2]/div/div[2]/button',
 }
 
-PROD_DICT = {
-    "5411188134985" : {
-        "Name" : "Not Milk",
-        "Amount" : "2"
-    },
-    "54051157" : {
-        "Name" : "Chocolate Vegangurt",
-        "Amount" : "2"
-    },
-    "7296073205692" : {
-        "Name" : "Tomato Sauce",
-        "Amount" : "1"
-    },
-    # "3726776" : {
-    #     "Name" : "Tofu Schnitzel",
-    #     "Amount" : "1"
-    # },
-    # "7290017105895" : {
-    #     "Name" : "Hummus Can",
-    #     "Amount" : "1"
-    # },
-    # "7296073006411" : {
-    #     "Name" : "Medium Pickles",
-    #     "Amount" : "1"
-    # },
-    # "7296073345763" : {
-    #     "Name" : "Organic Tofu",
-    #     "Amount" : "1"
-    # },
-    # "7296073392699" : {
-    #     "Name" : "Paper Towels",
-    #     "Amount" : "4"
-    # },
-    # "187938" : {
-    #     "Name" : "Toilet Paper",
-    #     "Amount" : "1"
-    # },
-    # "7290013724946" : {
-    #     "Name" : "Chocolate Almonds",
-    #     "Amount" : "1"
-    # }
-}
+PROD_DICT_PATH = 'prod_dict.json'
 
 USERNAME = "user"
 
@@ -73,6 +35,7 @@ URL = 'https://www.shufersal.co.il/online/he/login'
 
 WIN_WIDTH = 800
 WIN_HEIGHT = 800
+
 #### Functions Region ####
 def init_website(win_width, win_height):
     # our handle for the chrome browser
@@ -177,7 +140,22 @@ def keep_alive():
     while(True):
         pass
 
+def load_prod_dict(prod_dict_path):
+
+    prod_dict = {}
+
+    with open(prod_dict_path) as prod_dict_handle:
+        prod_dict_nested = json.load(prod_dict_handle)
+
+        for prod_dict_sub in prod_dict_nested.values():
+            prod_dict.update(prod_dict_sub)
+
+    return prod_dict
+        
+
 def main():
+    prod_dict = load_prod_dict(PROD_DICT_PATH)
+    
     driver = init_website(WIN_WIDTH, WIN_HEIGHT)
 
     goto_url(driver, URL)
@@ -188,7 +166,7 @@ def main():
     
     clear_cart(driver)
 
-    add_items(driver, PROD_DICT)
+    add_items(driver, prod_dict)
 
     view_cart(driver)
 
@@ -210,8 +188,8 @@ main()
 # (v) Add amount functionality
 # (v) Code refactor (naming, divide to functions, comments, global variables)
 # (v) Split open_website() to init_browser(...) and goto_url(...)
-# (-) Missing item exception
-# (-) Json file product dict
+# (v) Json file product dict
 # (-) Store passwords
+# (-) Missing item exception
 # (*) Final payment must always be manual after cart review !!!!!!
 # (*) When done: Vegetables, Peanut, Vegan Supplies, Super Pharm
