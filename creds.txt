@@ -1,0 +1,3 @@
+USERNAME = "***REMOVED***"
+
+PASSWORD = "***REMOVED***"
